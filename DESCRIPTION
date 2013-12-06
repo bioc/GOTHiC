@@ -1,7 +1,7 @@
 Package: GOTHiC
 Title: Binomial test for Hi-C data analysis
 Description: This is a Hi-C analysis package using a cumulative binomial test to detect interactions between distal genomic loci that have significantly more reads than expected by chance in  Hi-C experiments. It takes mapped paired NGS reads as input and gives back the list of significant interactions for a given bin size in the genome. 
-Version: 0.99.0
+Version: 0.99.1
 Date: 2013-06-07
 Author: Borbala Mifsud and Robert Sugar
 Maintainer: Borbala Mifsud <Borbala.Mifsud@cancer.org.uk>
@@ -13,4 +13,3 @@ Suggests: HiCDataLymphoblast
 Enhances: multicore
 biocViews: HighThroughputSequencing, Preprocessing, Epigenetics
 License: GPL-3
-Packaged: 2013-11-05 16:55:23 UTC; borbalagerle
