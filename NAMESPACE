@@ -7,15 +7,14 @@ importFrom("rtracklayer", export.bedGraph)
 
 import("data.table")
 
-importMethodsFrom(GenomicRanges, as.data.frame, countOverlaps, elementMetadata, findOverlaps, ranges,  seqlevels, "seqlevels<-", seqnames)
-
-importFrom(GenomicRanges, GRanges)
+import("GenomicRanges")
 
 importMethodsFrom(BiocGenerics, cbind, get, lapply, mapply, rbind, sapply, strand)
 
 importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, colnames, "colnames<-", coverage, diff, endoapply, eval, gsub, head, ifelse, "%in%", levels, median, metadata, "metadata<-", narrow, ncol, nrow, order, paste, pmin, quantile, Rle, rownames, "rownames<-", runLength, runValue, score, sort, split, start, sub,  table, tapply, toupper, unique, unlist, update, which, width, with)
 
-importFrom("BSgenome", installed.genomes, available.genomes)
+import("Biostrings")
+import("BSgenome")
 import("ggplot2")
 
 export("pairReads")
