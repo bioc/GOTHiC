@@ -9,9 +9,11 @@ import("data.table")
 
 import("GenomicRanges")
 
-importMethodsFrom(BiocGenerics, cbind, get, lapply, mapply, rbind, sapply, strand)
+importFrom(BiocGenerics, cbind, get, lapply, mapply, rbind, sapply, strand)
 
-importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, colnames, "colnames<-", coverage, diff, endoapply, eval, gsub, head, ifelse, "%in%", levels, median, metadata, "metadata<-", narrow, ncol, nrow, order, paste, pmin, quantile, Rle, rownames, "rownames<-", runLength, runValue, score, sort, split, start, sub,  table, tapply, toupper, unique, unlist, update, which, width, with)
+importFrom(S4Vectors, metadata, "metadata<-")
+
+importMethodsFrom(IRanges, append, as.factor, as.list, as.vector, colnames, "colnames<-", coverage, diff, endoapply, eval, gsub, head, ifelse, "%in%", levels, median, narrow, ncol, nrow, order, paste, pmin, quantile, Rle, rownames, "rownames<-", runLength, runValue, score, sort, split, start, sub,  table, tapply, toupper, unique, unlist, update, which, width, with)
 
 import("Biostrings")
 import("BSgenome")
