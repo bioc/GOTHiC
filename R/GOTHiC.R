@@ -12,10 +12,17 @@
 	id1=as.character(elementMetadata(reads1_1)$id)
     id2=as.character(elementMetadata(reads2_1)$id)
 	if(fileType=='BAM'){
-		ids1 = sapply(strsplit(id1, '\\-'), '[[', 2)
-		ids2 = sapply(strsplit(id2, '\\-'), '[[', 2)
-		elementMetadata(reads1_1)$id = ids1
-		elementMetadata(reads2_1)$id = ids2
+		if(length(grep('SRR',id1[1]))==1){
+			ids1=id1
+			ids2=id2
+			elementMetadata(reads1_1)$id = id1
+			elementMetadata(reads2_1)$id = id2
+		}else
+		{
+			ids1 = sapply(strsplit(id1, '\\-'), '[[', 2)
+			ids2 = sapply(strsplit(id2, '\\-'), '[[', 2)
+			elementMetadata(reads1_1)$id = ids1
+			elementMetadata(reads2_1)$id = ids2}
 	}else
 	{
 #old fastq files use /1 and /2 to differentiate read pairs, CASAVA 1.8 separates members of a pair with spaces	
@@ -480,7 +487,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 #all read pairs used in binomial
 	numberOfReadPairs <- sum(binned_df_filtered$frequencies)
 #calculate coverage 
-	all_bins <- unique(c(binned_df_filtered$int1,binned_df_filtered$int2))
+	all_bins <- unique(c(unique(binned_df_filtered$int1), unique(binned_df_filtered$int2)))
 	all_bins <- sort(all_bins)
 	
 	binned_dt=data.table(binned_df_filtered)
