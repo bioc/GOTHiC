@@ -14,6 +14,6 @@ Depends: R (>= 2.15.1), methods, utils, stats, GenomicRanges, Biostrings,
         BSgenome, data.table
 Imports: BiocGenerics, S4Vectors, IRanges, ShortRead, rtracklayer, ggplot2
 Suggests: HiCDataLymphoblast
-Enhances: multicore
+Enhances: parallel
 License: GPL-3
 biocViews: Sequencing, Preprocessing, Epigenetics
