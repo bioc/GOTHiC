@@ -238,13 +238,13 @@ ignore.strand=TRUE, mc.cores=1, mc.preschedule = TRUE)
         q_idx <- q_splitranges[[seqlevel]]
         s_idx <- s_splitranges[[seqlevel]]
         hits <- .findOverlaps.circle(circle.length,
-        seqselect(q_ranges, q_idx),
-        seqselect(s_ranges, s_idx),
-        maxgap, minoverlap, type)
+                                     q_ranges[q_idx],
+                                     s_ranges[s_idx],
+                                     maxgap, minoverlap, type)
         q_hits <- queryHits(hits)
         s_hits <- subjectHits(hits)
-        compatible_strand <- seqselect(q_strand, q_idx)[q_hits] *
-        seqselect(s_strand, s_idx)[s_hits] != -1L
+        compatible_strand <- q_strand[q_idx][q_hits] *
+                             s_strand[s_idx][s_hits] != -1L
         hits <- hits[compatible_strand]
         remapHits(hits, query.map=as.integer(q_idx),
         new.queryLength=q_len,
@@ -268,11 +268,11 @@ ignore.strand=TRUE, mc.cores=1, mc.preschedule = TRUE)
     }
     if (select == "first") {
         ans <- rep.int(NA_integer_, q_len)
-        oo <- IRanges:::orderIntegerPairs(q_hits, s_hits, decreasing=TRUE)
+        oo <- S4Vectors:::orderIntegerPairs(q_hits, s_hits, decreasing=TRUE)
         ans[q_hits[oo]] <- s_hits[oo]
         return(ans)
     }
-    oo <- IRanges:::orderIntegerPairs(q_hits, s_hits)
+    oo <- S4Vectors:::orderIntegerPairs(q_hits, s_hits)
     q_hits <- q_hits[oo]
     s_hits <- s_hits[oo]
     if (select == "last") {
