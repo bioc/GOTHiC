@@ -127,9 +127,9 @@ pairReads <- function(fileName1, fileName2, sampleName, DUPLICATETHRESHOLD=1, fi
 
     chrEnds <- seqlengths(genome)
 #find out how many base pairs from the 5 end of the restriction site the enzyme cuts
-    restRemain <- length(sapply(strsplit(restrictionSite,'\\^'),'[[',1))
+    restRemain <- regexpr("\\^",restrictionSite)[1]-1
 #restriction site as regular expression
-    rSite <- paste(strsplit(restrictionSite,'\\^')[[1]][1],strsplit(restrictionSite,'\\^')[[1]][2],sep='')
+	rSite <- sub('\\^', '', restrictionSite)
 #find locations where restriction enzyme cuts for all chromosomes
     params <- new("BSParams",X=genome, FUN=matchPattern, exclude = "random",simplify=TRUE)
     resSite <- bsapply(params, pattern = rSite)
