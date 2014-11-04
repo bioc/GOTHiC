@@ -136,7 +136,7 @@ pairReads <- function(fileName1, fileName2, sampleName, DUPLICATETHRESHOLD=1, fi
     starts <- lapply(resSite, function(x){c(1,(start(x)+restRemain))})
     lengths <- lapply(resSite, function(x){length(x)+1})
     chrs <- lapply(1:length(names(resSite)),function(i){rep(names(resSite)[i],times=lengths[[i]])})
-    ends <- lapply(1:length(names(resSite)), function(i){c(start(resSite[[i]]),chrEnds[i])})
+    ends <- lapply(1:length(names(resSite)), function(i){c(start(resSite[[i]])+restRemain-1,chrEnds[i])})
     starts <- unlist(starts)
     chrs <- unlist(chrs)
     ends <- unlist(ends)
