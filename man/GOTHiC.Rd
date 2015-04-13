@@ -82,7 +82,7 @@ fileName2 <- list.files(dirPath, full.names=TRUE)[2]
 binom=GOTHiC(fileName1, fileName2, sampleName='lymphoid_chr20', res=1000000, 
 BSgenomeName='BSgenome.Hsapiens.UCSC.hg18', genome=BSgenome.Hsapiens.UCSC.hg18, 
 restrictionSite='A^AGCTT', enzyme='HindIII',cistrans='all', filterdist=10000, 
-DUPLICATETHRESHOLD=1, fileType='Bowtie', parallel=FALSE, cores=NULL)
+DUPLICATETHRESHOLD=1, fileType='Table', parallel=FALSE, cores=NULL)
 }
 \keyword{manip}
 \keyword{package}

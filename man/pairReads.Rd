@@ -45,7 +45,7 @@ dirPath <- system.file("extdata", package="HiCDataLymphoblast")
 fileName1 <- list.files(dirPath, full.names=TRUE)[1]
 fileName2 <- list.files(dirPath, full.names=TRUE)[2]
 paired <- pairReads(fileName1, fileName2, sampleName='lymphoid_chr20', 
-DUPLICATETHRESHOLD = 1, fileType='Bowtie')
+DUPLICATETHRESHOLD = 1, fileType='Table')
 }
 
 \keyword{manip}

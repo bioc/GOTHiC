@@ -36,14 +36,40 @@ data(lymphoid_chr20_paired_filtered)
 \subsection{A binomial statistic for accurately modelling Hi-C data} 
 
 \subsubsection{Method}
-First, self-ligation read-pairs and those mapping to adjacent fragments are filtered out by removing any pair of reads whose middle points are closer than 10kb (the median size of the fragments is about 2130bp in our experiment, therefore the 10kb cut-off allows for removal of read pairs resulting from incomplete digestion as well).  PCR duplicates are filtered by removing read-pairs with both ends mapping to identical coordinates. Having done so, true interactions can be separated from spurious ligations using a binomial test. Briefly, the probability that a read pair is the consequence of a spurious ligation between two sites can be estimated as: 
+First, self-ligation read-pairs and those mapping to adjacent fragments are filtered out by removing any pair of reads whose middle points are closer than 10kb (the median size of the fragments is about 2130bp in our experiment, therefore the 10kb cut-off allows for removal of read pairs resulting from incomplete digestion as well).  PCR duplicates are filtered by removing read-pairs with both ends mapping to identical coordinates. 
 
-\begin{equation}p_{j,h} = 2 * rel\_coverage_j * rel\_coverage_h
-\end{equation}where the relative coverage of a given site or region is
-\begin{equation}rel\_coverage_j = reads_j / reads_{total}
-\end{equation}and the noise fraction represents the fraction of the ligations corresponding to spurious inter-molecular ligations (having previously removed self-ligations).  The observed coverage is a complex function of a multitude of biases, including the density of restriction sites, cleavage efficiency, ligation efficiency, amplification and sequencing biases and mappability. The probability of seeing a random read-pair between two regions depends on the relative coverages of the interacting regions in a multiplicative manner since the biases affect both interacting partners independently.Given a total number of read-pairs in the experiment of N (after excluding self-ligation read-pairs), the probability of observing $n_{j,h}$ read-pairs between two loci is given by the binomial density:
+Having done so, true interactions can be separated from spurious ligations using a binomial test. Briefly, the probability that a read pair is the consequence of a spurious ligation between two sites can be estimated as: 
 
-\begin{equation}pval_{jh}=P(x \geq n_{jh})=1-\sum_{i=0}^{n_{jh}-1} \binom{N}{i} (P_{randomintermol_{jh}})^i(1-P_{randomintermol_{jh}})^{N-i}\end{equation} This allows calculating a p-value of the chance of seeing the observed number of read-pairs by chance, as a simple function of the coverage of both sites and the total number of reads. Correcting for multiple testing using the Benjamini-Hochberg multiple testing correction we obtain a q-value that can be used directly to infer significant interactions with a desired false discovery rate from a Hi-C dataset.In addition to a p-value, an observed-over-expected ratio can be easily calculated, what can be used as a measure of effect size or as an unbiased measure of interaction frequency or strength.\begin{equation}Obs\_exp\_ratio = n_{j,h} / (p_{j,h}*N)\end{equation}The binomial method does not explicitly assume that different biases are multiplicative since it does not model the total effect of all biases as a product of their relative contribution. However, the method assumes that biases affect both read ends independently. This is a reasonable assumption given our understanding of known biases and has been used in previous methods (e.g. \cite{Yaffe2011,Imakaev2012}).Thus for any two genomic fragments, the binomial test provides two statistics: (i) a p-value of observing an interaction between the two loci given a random distribution of ligations; and (ii) a measure of the strength of the interaction compared with random expectation. 
+\begin{equation}
+p_{j,h} = 2 * rel\_coverage_j * rel\_coverage_h
+\end{equation}
+where the relative coverage of a given site or region is
+
+\begin{equation}
+rel\_coverage_j = reads_j / reads_{total}
+\end{equation}
+
+and the noise fraction represents the fraction of the ligations corresponding to spurious inter-molecular ligations (having previously removed self-ligations).  
+
+The observed coverage is a complex function of a multitude of biases, including the density of restriction sites, cleavage efficiency, ligation efficiency, amplification and sequencing biases and mappability. The probability of seeing a random read-pair between two regions depends on the relative coverages of the interacting regions in a multiplicative manner since the biases affect both interacting partners independently.
+
+Given a total number of read-pairs in the experiment of N (after excluding self-ligation read-pairs), the probability of observing $n_{j,h}$ read-pairs between two loci is given by the binomial density:
+
+\begin{equation}
+pval_{jh}=P(x \geq n_{jh})=1-\sum_{i=0}^{n_{jh}-1} \binom{N}{i} (P_{randomintermol_{jh}})^i(1-P_{randomintermol_{jh}})^{N-i}
+\end{equation}
+ 
+This allows calculating a p-value of the chance of seeing the observed number of read-pairs by chance, as a simple function of the coverage of both sites and the total number of reads. Correcting for multiple testing using the Benjamini-Hochberg multiple testing correction we obtain a q-value that can be used directly to infer significant interactions with a desired false discovery rate from a Hi-C dataset.
+
+In addition to a p-value, an observed-over-expected ratio can be easily calculated, what can be used as a measure of effect size or as an unbiased measure of interaction frequency or strength.
+
+\begin{equation}
+Obs\_exp\_ratio = n_{j,h} / (p_{j,h}*N)
+\end{equation}
+
+The binomial method does not explicitly assume that different biases are multiplicative since it does not model the total effect of all biases as a product of their relative contribution. However, the method assumes that biases affect both read ends independently. This is a reasonable assumption given our understanding of known biases and has been used in previous methods (e.g. \cite{Yaffe2011,Imakaev2012}).
+
+Thus for any two genomic fragments, the binomial test provides two statistics: (i) a p-value of observing an interaction between the two loci given a random distribution of ligations; and (ii) a measure of the strength of the interaction compared with random expectation. 
 
 
 \subsection{Function description}
@@ -55,7 +81,7 @@ dirPath = system.file("extdata", package="HiCDataLymphoblast")
 fileName1 = list.files(dirPath, full.names=TRUE)[1]
 fileName2 = list.files(dirPath, full.names=TRUE)[2]
 paired = pairReads(fileName1, fileName2, sampleName="lymphoid_chr20", 
-DUPLICATETHRESHOLD = 1, fileType="Bowtie")
+DUPLICATETHRESHOLD = 1, fileType="Table")
 @
 
 
@@ -82,7 +108,7 @@ binom=GOTHiC(fileName1,fileName2, sampleName="lymphoid_chr20",
 res=1000000, BSgenomeName="BSgenome.Hsapiens.UCSC.hg18",
 genome=BSgenome.Hsapiens.UCSC.hg18, 
 restrictionSite="A^AGCTT", enzyme="HindIII" ,cistrans="all", filterdist=10000,
-DUPLICATETHRESHOLD=1, fileType="Bowtie", parallel=FALSE, cores=NULL)
+DUPLICATETHRESHOLD=1, fileType="Table", parallel=FALSE, cores=NULL)
 @
 
 \clearpage

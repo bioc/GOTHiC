@@ -4,6 +4,17 @@
 .onlyPairing <- function(fileName1, fileName2, sampleName, fileType)
 {
 #DUPLICATETHRESHOLD: maximum amount of duplicated paired-end reads allowed (over that value it is expected to be PCR bias)
+	if(fileType=="Table"){
+		reads1=read.table(fileName1, header=F, sep='\t', colClasses=c(rep('character', times=3), 'numeric', rep("NULL", times=4)))
+		reads1_1=GRanges(seqnames=reads1$V3, ranges=IRanges(start=reads1$V4, end=reads1$V4), strand=reads1$V2, id=sapply(strsplit(reads1$V1, ' '), '[[', 2))
+		reads2=read.table(fileName2, header=F, sep='\t', colClasses=c(rep('character', times=3), 'numeric', rep("NULL", times=4)))
+		reads2_1=GRanges(seqnames=reads2$V3, ranges=IRanges(start=reads2$V4, end=reads2$V4), strand=reads2$V2, id=sapply(strsplit(reads2$V1, ' '), '[[', 2))
+		id1=as.character(elementMetadata(reads1_1)$id)
+		id2=as.character(elementMetadata(reads2_1)$id)
+		ids1=id1
+		ids2=id2
+	}	
+	if(fileType in c("Bowtie", "BAM"){
 	reads1=readAligned(fileName1,type=fileType) ## returns identifier, strand, chromosome, position read, quality
 	reads1_1=as(reads1,"GRanges") ## Grange object containing 4 slots, seqnames, ranges, strand, elementMetadata (data.frame)
 	reads2=readAligned(fileName2,type=fileType)
@@ -36,6 +47,7 @@
 			ids2 = sapply(strsplit(id2, '[/ ]'), '[[', 1)
 		}
 	}
+	}   
 	rm(id1,id2)
 	s1=which(ids1%in%ids2)
 	s2=which(ids2%in%ids1)
