@@ -8,8 +8,7 @@ import("data.table")
 
 import("BiocGenerics")
 import("S4Vectors")
-
-importMethodsFrom(IRanges, append, as.list, as.vector, colnames, "colnames<-", coverage, diff, endoapply, eval, gsub, head, median, narrow, ncol, nrow, order, pmin, quantile, rownames, "rownames<-", score, sort, split, start, sub,  table, tapply, toupper, unique, unlist, update, which, width, with)
+import("IRanges")
 
 import("GenomicRanges")
 import("Biostrings")
