@@ -14,39 +14,39 @@
 		ids1=id1
 		ids2=id2
 	}	
-	if(fileType in c("Bowtie", "BAM"){
-	reads1=readAligned(fileName1,type=fileType) ## returns identifier, strand, chromosome, position read, quality
-	reads1_1=as(reads1,"GRanges") ## Grange object containing 4 slots, seqnames, ranges, strand, elementMetadata (data.frame)
-	reads2=readAligned(fileName2,type=fileType)
-	reads2_1=as(reads2,"GRanges")
+	if(fileType%in%c("Bowtie", "BAM")){
+		reads1=readAligned(fileName1,type=fileType) ## returns identifier, strand, chromosome, position read, quality
+		reads1_1=as(reads1,"GRanges") ## Grange object containing 4 slots, seqnames, ranges, strand, elementMetadata (data.frame)
+		reads2=readAligned(fileName2,type=fileType)
+		reads2_1=as(reads2,"GRanges")
 #match IDs to find paired reads where both ends were mapped
-	id1=as.character(elementMetadata(reads1_1)$id)
-    id2=as.character(elementMetadata(reads2_1)$id)
-	if(fileType=='BAM'){
-		if(length(grep('SRR',id1[1]))==1){
-			ids1=id1
-			ids2=id2
-			elementMetadata(reads1_1)$id = id1
-			elementMetadata(reads2_1)$id = id2
+		id1=as.character(elementMetadata(reads1_1)$id)
+		id2=as.character(elementMetadata(reads2_1)$id)
+		if(fileType=='BAM'){
+			if(length(grep('SRR',id1[1]))==1){
+				ids1=id1
+				ids2=id2
+				elementMetadata(reads1_1)$id = id1
+				elementMetadata(reads2_1)$id = id2
+			}else
+			{
+				ids1 = sapply(strsplit(id1, '\\-'), '[[', 2)
+				ids2 = sapply(strsplit(id2, '\\-'), '[[', 2)
+				elementMetadata(reads1_1)$id = ids1
+				elementMetadata(reads2_1)$id = ids2}
 		}else
 		{
-			ids1 = sapply(strsplit(id1, '\\-'), '[[', 2)
-			ids2 = sapply(strsplit(id2, '\\-'), '[[', 2)
-			elementMetadata(reads1_1)$id = ids1
-			elementMetadata(reads2_1)$id = ids2}
-	}else
-	{
 #old fastq files use /1 and /2 to differentiate read pairs, CASAVA 1.8 separates members of a pair with spaces	
-		firsttwo=sapply(strsplit(id1[1:2], '[/ ]'), '[[', 1)
-		if(firsttwo[1]==firsttwo[2]){
-			ids1 = sapply(strsplit(id1, ' '), '[[', 1)
-			ids2 = sapply(strsplit(id2, ' '), '[[', 1)
-		}else
-		{
-			ids1 = sapply(strsplit(id1, '[/ ]'), '[[', 1)
-			ids2 = sapply(strsplit(id2, '[/ ]'), '[[', 1)
+			firsttwo=sapply(strsplit(id1[1:2], '[/ ]'), '[[', 1)
+			if(firsttwo[1]==firsttwo[2]){
+				ids1 = sapply(strsplit(id1, ' '), '[[', 1)
+				ids2 = sapply(strsplit(id2, ' '), '[[', 1)
+			}else
+			{
+				ids1 = sapply(strsplit(id1, '[/ ]'), '[[', 1)
+				ids2 = sapply(strsplit(id2, '[/ ]'), '[[', 1)
+			}
 		}
-	}
 	}   
 	rm(id1,id2)
 	s1=which(ids1%in%ids2)
