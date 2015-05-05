@@ -471,7 +471,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
     
 #filter for reads that are closer than 10kb to get rid of incomplete digest products
 #	df_int <- data.frame(as.vector(seqnames(interactingLoci[[1]])), start(ranges(interactingLoci[[1]])), as.vector(seqnames(interactingLoci[[2]])), start(ranges(interactingLoci[[2]])))
-	df_int <- data.frame(as.character(seqnames(interactingLoci[[1]])), start(ranges(interactingLoci[[1]])), as.character(seqnames(interactingLoci[[2]])), start(ranges(interactingLoci[[2]])))
+	df_int <- data.frame(as.character(seqnames(interactingLoci[[1]])), start(ranges(interactingLoci[[1]])), as.character(seqnames(interactingLoci[[2]])), start(ranges(interactingLoci[[2]])), stringsAsFactors=FALSE)
 	colnames(df_int) <- c("chr1", "locus1", "chr2", "locus2")
 	df_filtered <- df_int
 	df_filtered$dist <-as.vector(ifelse(df_filtered$chr1 == df_filtered$chr2, abs(df_filtered$locus1 - df_filtered$locus2), Inf))
