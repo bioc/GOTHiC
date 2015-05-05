@@ -15,40 +15,40 @@
 		ids2=id2
 	}	
 	if(fileType%in%c("Bowtie", "BAM")){
-		reads1=readAligned(fileName1,type=fileType) ## returns identifier, strand, chromosome, position read, quality
-		reads1_1=as(reads1,"GRanges") ## Grange object containing 4 slots, seqnames, ranges, strand, elementMetadata (data.frame)
-		reads2=readAligned(fileName2,type=fileType)
-		reads2_1=as(reads2,"GRanges")
+	   reads1=readAligned(fileName1,type=fileType) ## returns identifier, strand, chromosome, position read, quality
+	   reads1_1=as(reads1,"GRanges") ## Grange object containing 4 slots, seqnames, ranges, strand, elementMetadata (data.frame)
+	   reads2=readAligned(fileName2,type=fileType)
+	   reads2_1=as(reads2,"GRanges")
 #match IDs to find paired reads where both ends were mapped
-		id1=as.character(elementMetadata(reads1_1)$id)
-		id2=as.character(elementMetadata(reads2_1)$id)
-		if(fileType=='BAM'){
-			if(length(grep('SRR',id1[1]))==1){
-				ids1=id1
-				ids2=id2
-				elementMetadata(reads1_1)$id = id1
-				elementMetadata(reads2_1)$id = id2
-			}else
-			{
-				ids1 = sapply(strsplit(id1, '\\-'), '[[', 2)
-				ids2 = sapply(strsplit(id2, '\\-'), '[[', 2)
-				elementMetadata(reads1_1)$id = ids1
-				elementMetadata(reads2_1)$id = ids2}
-		}else
-		{
+	   id1=as.character(elementMetadata(reads1_1)$id)
+	   id2=as.character(elementMetadata(reads2_1)$id)
+	   if(fileType=='BAM'){
+	   if(length(grep('SRR',id1[1]))==1){
+	   ids1=id1
+	   ids2=id2
+	   elementMetadata(reads1_1)$id = id1
+	   elementMetadata(reads2_1)$id = id2
+	   }else
+	   {
+	   ids1 = sapply(strsplit(id1, '\\-'), '[[', 2)
+	   ids2 = sapply(strsplit(id2, '\\-'), '[[', 2)
+	   elementMetadata(reads1_1)$id = ids1
+	   elementMetadata(reads2_1)$id = ids2}
+	   }else
+	   {
 #old fastq files use /1 and /2 to differentiate read pairs, CASAVA 1.8 separates members of a pair with spaces	
-			firsttwo=sapply(strsplit(id1[1:2], '[/ ]'), '[[', 1)
-			if(firsttwo[1]==firsttwo[2]){
-				ids1 = sapply(strsplit(id1, ' '), '[[', 1)
-				ids2 = sapply(strsplit(id2, ' '), '[[', 1)
-			}else
-			{
-				ids1 = sapply(strsplit(id1, '[/ ]'), '[[', 1)
-				ids2 = sapply(strsplit(id2, '[/ ]'), '[[', 1)
-			}
-		}
-	}   
-	rm(id1,id2)
+	   firsttwo=sapply(strsplit(id1[1:2], '[/ ]'), '[[', 1)
+	   if(firsttwo[1]==firsttwo[2]){
+	   ids1 = sapply(strsplit(id1, ' '), '[[', 1)
+	   ids2 = sapply(strsplit(id2, ' '), '[[', 1)
+	   }else
+	   {
+	   ids1 = sapply(strsplit(id1, '[/ ]'), '[[', 1)
+	   ids2 = sapply(strsplit(id2, '[/ ]'), '[[', 1)
+	   }
+	   }
+	   }   
+	   rm(id1,id2)
 	s1=which(ids1%in%ids2)
 	s2=which(ids2%in%ids1)
 	paired_reads_1=reads1_1[s1]
@@ -437,6 +437,345 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 	return(interactions)
 }
 
+
+#############functions to import HiCUP filtered reads##########
+.fixChromosomeNames <- function(chrnames)
+{
+#capital to small
+	chrnames <- sub("CHR", "chr", chrnames)
+	chrnames <- sub("", "chr", chrnames)
+	chrnames <- sub("chrchr", "chr", chrnames)
+}
+
+.importHicup <- function(fileName, checkConsistency=TRUE, fileType=ifelse(grepl("\\.bam$", fileName), "bam", "table"), compressed=ifelse(grepl("\\.gz$", fileName), TRUE, FALSE))
+{
+#the output of hicup is a sam file, that looks like uniques_ORIGINALFILE_trunc.sam
+#this has to be converted using the hicupToTable tool
+	
+	library(GenomicRanges)
+	
+	if(compressed){
+		tbl <- read.table(gzfile(fileName))
+#in the sam file the two ends of the interactions are consecutive rows	
+		odd <- tbl[seq(1,nrow(tbl),2), ]
+		names(odd) <- c("id1", "flag1", "chr1", "locus1")	
+		levels(odd$chr1) <- .fixChromosomeNames(levels(odd$chr1))
+		even <- tbl[seq(2,nrow(tbl),2), ]
+		names(even) <- c("id2", "flag2", "chr2", "locus2")	
+		levels(even$chr2) <- .fixChromosomeNames(levels(even$chr2))
+	}else{
+		
+		if(fileType=="table")
+		{
+			tbl <- read.table(fileName)
+#in the sam file the two ends of the interactions are consecutive rows	
+			odd <- tbl[seq(1,nrow(tbl),2), ]
+			names(odd) <- c("id1", "flag1", "chr1", "locus1")	
+			levels(odd$chr1) <- .fixChromosomeNames(levels(odd$chr1))
+			even <- tbl[seq(2,nrow(tbl),2), ]
+			names(even) <- c("id2", "flag2", "chr2", "locus2")	
+			levels(even$chr2) <- .fixChromosomeNames(levels(even$chr2))
+		} else if(fileType=="bam")
+		{
+			stop('imporHicup: HiCUP output BAM file needs to be converted into a table')
+		}
+	}
+	joined <- cbind(odd, even)
+	
+	if(nrow(odd) != nrow(even)) stop('importHicup: reads must be paired in consecutive rows')
+	
+	if(checkConsistency)
+	{
+		if(!all(joined$id1==joined$id2)) stop('importHicup: reads must be paired in consecutive rows')
+	}
+	
+	return(joined[, c("chr1", "locus1", "chr2", "locus2")])
+}
+
+.getHindIIIsitesFromHicup <- function(fileName, asRanges = TRUE)
+{
+	sites = read.table(fileName, stringsAsFactor=FALSE, header=TRUE, skip=1)
+	sites$chr <- sub("^", "chr", sites$Chromosome)
+	sites$chr <- sub("chrCHR", "chr", sites$chr) #sometimes there is CHR
+	sites$chr <- sub("chrchr", "chr", sites$chr) #sometimes there is CHR
+	sites$start <- sites$Fragment_Start_Position
+	sites$locus <- sites$Fragment_Start_Position
+	sites$end <- sites$Fragment_End_Position
+	sites <- sites[, c("chr", "locus", "start", "end")]	
+	
+	if(asRanges)
+	{
+		library(GenomicRanges)
+		return(GRanges(seqnames=sites$chr, ranges=IRanges(start=sites$start, end=sites$end)))
+	}
+}
+
+.mapHicupToRestrictionFragment <- function(interactions, fragments)
+{
+	
+	source = GRanges(seqnames =	Rle(interactions$chr1), ranges = IRanges(interactions$locus1, width = 1),strand = Rle("*", nrow(interactions)))
+	target = GRanges(seqnames =	Rle(interactions$chr2), ranges = IRanges(interactions$locus2, width = 1),strand = Rle("*", nrow(interactions)))
+									  
+	
+	if(is.character(fragments))
+	{
+		fragments <- .getHindIIIsitesFromHicup(fragments)
+	}
+	
+	firstFragment <- findOverlaps(source, fragments, select="first")
+	secondFragment <- findOverlaps(target, fragments, select="first")
+	
+#filter out non-mapping loci
+	validInteractions <- !is.na(firstFragment) & !is.na(secondFragment)
+	firstFragment <- firstFragment[validInteractions]
+	secondFragment <- secondFragment[validInteractions]
+	
+#make sure A-B and B-A are treated together -> put fragment with smaller ID in front
+	sources <- pmin(firstFragment, secondFragment)
+	targets <- pmax(firstFragment, secondFragment)
+	
+	interactions <- as.data.frame(cbind(seqnames(sources), start(ranges(sources)), seqnames(targets), start(ranges(targets)), rep(1, times=length(sources))), stringsAsFactors=FALSE)
+	colnames(interactions) <- c('chr1', 'locus1', 'chr2', 'locus2', 'frequencies')				 
+	return(interactions)
+}
+
+.binomialHiChicup=function(hicupinteraction, restrictionFile, sampleName, cistrans='all', parallel=FALSE, cores=8, removeDiagonal=TRUE)
+	{
+		library("data.table")
+			hindGR <- .getHindIIIsitesFromHicup(restrictionFile)
+		if(parallel)
+			{
+				library(parallel)
+				print("running garbage collector before parallel fork")
+				gc()
+			}
+					 
+		binned_df_filtered <-hicupinteraction
+		binned_df_filtered$int1 <-paste(binned_df_filtered$chr1,binned_df_filtered$locus1,sep='_')
+		binned_df_filtered$int2 <-paste(binned_df_filtered$chr2,binned_df_filtered$locus2,sep='_')
+#diagonal removal
+		if(removeDiagonal)
+			{
+				binned_df_filtered <- binned_df_filtered[binned_df_filtered$int1!=binned_df_filtered$int2,]	
+			}
+		if(cistrans=='cis'){
+				binned_df_filtered <- binned_df_filtered[binned_df_filtered$chr1==binned_df_filtered$chr2,]	
+			}
+		if(cistrans=='trans'){
+				binned_df_filtered <- binned_df_filtered[binned_df_filtered$chr1!=binned_df_filtered$chr2,]	
+			}
+					 
+#all read pairs used in binomial
+		numberOfReadPairs <- sum(binned_df_filtered$frequencies)
+#calculate coverage 
+		all_bins <- unique(c(unique(binned_df_filtered$int1), unique(binned_df_filtered$int2)))
+		all_bins <- sort(all_bins)
+		if(nrow(binned_df_filtered)>1e8)
+			{
+				t <- ceiling(nrow(binned_df_filtered)/1e8)
+				dfList <- list()
+				dfList[[1]] <- binned_df_filtered[1:1e8,]
+				for(i in 2:t){
+					 dfList[[i]] <- binned_df_filtered[(((i-1)*1e8)+1):min((i*1e8),nrow(binned_df_filtered)),]
+					 }
+				dtList <- lapply(dfList, data.table)
+				covAs <- lapply(dtList, function(x) x[,sum(frequencies), by=int1])
+				covBs <- lapply(dtList, function(x) x[,sum(frequencies), by=int2])
+				covAm <- do.call(rbind, covAs)
+				covBm <- do.call(rbind, covBs)
+				covA <- covAm[,sum(V1),by=int1]
+				covB <- covBm[,sum(V1),by=int2]	
+			}else{
+				binned_dt=data.table(binned_df_filtered)
+				covA <- binned_dt[,sum(frequencies),by=int1]	
+				covB <- binned_dt[,sum(frequencies),by=int2]
+			}
+		covA <- setkey(covA,key='int1')
+		setnames(covB, 1,'int1')
+		covB <- setkey(covB,key='int1')
+					 
+		cov=merge(covA,covB,all.x=TRUE,all.y=TRUE,by='int1')
+		cov$V1.x[is.na(cov$V1.x)]=0
+		cov$V1.y[is.na(cov$V1.y)]=0
+		cov$coverage=cov$V1.x+cov$V1.y
+		coverage=cov$coverage
+		names(coverage)=cov$int1
+		sumcov <- sum(coverage)
+		relative_coverage <- coverage/sumcov
+		names(relative_coverage)=names(coverage)
+		binned_df_filtered$coverage_source <- relative_coverage[binned_df_filtered$int1]
+		binned_df_filtered$coverage_target <- relative_coverage[binned_df_filtered$int2]
+					 
+#probability correction assuming on average equal probabilities for all interactions
+		numberOfAllInteractions <- length(all_bins)^2
+		upperhalfBinNumber <- (length(all_bins)^2-length(all_bins))/2
+					 
+		if(cistrans!='all'){
+			chromos <- unique(binned_df_filtered$chr1)
+			chrlens <- c()
+			for(cr in chromos){ 
+				chrlens[cr] <- max(length(unique(binned_df_filtered$locus1[binned_df_filtered$chr1==cr])),length(unique(binned_df_filtered$locus2[binned_df_filtered$chr2==cr])))
+			}
+			cisBinNumber <-(sum(chrlens^2)-length(all_bins))/2	
+			transBinNumber <- upperhalfBinNumber-cisBinNumber
+		}
+					 
+		diagonalProb <- sum(relative_coverage^2)
+		if(cistrans=='all'){
+				probabilityCorrection <- if(removeDiagonal){1/(1-diagonalProb)}else{1}
+		}
+		if(cistrans=='cis'){
+			probabilityCorrection <- upperhalfBinNumber/cisBinNumber
+		}
+		if(cistrans=='trans'){
+			probabilityCorrection <- upperhalfBinNumber/transBinNumber
+		}
+					 
+		
+		binned_df_filtered$probabilityOfInteraction <- binned_df_filtered$coverage_source*binned_df_filtered$coverage_target*2*probabilityCorrection
+		
+					 
+		binned_df_filtered$predicted <- binned_df_filtered$probabilityOfInteraction * numberOfReadPairs
+					 					 
+		if(parallel)
+			{
+				library(parallel)
+				if(nrow(binned_df_filtered)>1e8)
+					{
+					 t <- ceiling(nrow(binned_df_filtered)/1e8)
+					 dfList <- list()
+					 dfList[[1]] <- binned_df_filtered[1:1e8,]
+					 for(i in 2:t){
+					 dfList[[i]] <- binned_df_filtered[(((i-1)*1e8)+1):min((i*1e8),nrow(binned_df_filtered)),]
+					}
+					 dtList <- lapply(dfList, function(x) as.data.frame(t(cbind(as.numeric(x[["frequencies"]]), 
+																				as.numeric(x[["probabilityOfInteraction"]])))))
+					 pvalues=list()
+					 for(i in 1:length(dtList)){
+						pvalues[[i]] <-unlist(mclapply(dtList[[i]], function(x)
+													{
+													binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
+													}, 
+													mc.cores=cores))
+					 }
+					 pvals=unlist(pvalues)
+					 binned_df_filtered$pvalue <- pvals
+				}else{
+					 
+					 binomParams <- as.data.frame(t(cbind(
+														  as.numeric(binned_df_filtered[["frequencies"]]), 
+														  as.numeric(binned_df_filtered[["probabilityOfInteraction"]]
+																	 ))))
+					 
+
+					 binned_df_filtered$pvalue <- unlist(mclapply(binomParams, function(x)
+																  {
+																  binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
+																  }, 
+																  mc.cores=cores))
+				}
+		}else{
+			if(nrow(binned_df_filtered)>1e8)
+				{
+					 t <- ceiling(nrow(binned_df_filtered)/1e8)
+					 dfList <- list()
+					 dfList[[1]] <- binned_df_filtered[1:1e8,]
+					 for(i in 2:t){
+					 dfList[[i]] <- binned_df_filtered[(((i-1)*1e8)+1):min((i*1e8),nrow(binned_df_filtered)),]
+				}
+			pvalues=list()
+			for(i in 1:length(dfList)){
+				pvalues[[i]] <-apply(dfList[[i]], 1, function(x)
+										  {
+										  binom.test(as.numeric(x[["frequencies"]]), numberOfReadPairs, as.numeric(x[["probabilityOfInteraction"]]), alternative = "greater")$p.value
+										  }	
+										  )
+					 }
+					 pvals=unlist(pvalues)
+					 binned_df_filtered$pvalue <- pvals
+					 }else{
+					 
+					 binned_df_filtered$pvalue <- apply(binned_df_filtered, 1, function(x)
+														{
+														binom.test(as.numeric(x[["frequencies"]]), numberOfReadPairs, as.numeric(x[["probabilityOfInteraction"]]), alternative = "greater")$p.value
+														}	
+														)
+			}
+		}
+					 
+#observed over expected log ratio
+		binned_df_filtered$logFoldChange <- log2(binned_df_filtered$frequencies/binned_df_filtered$predicted)
+#multiple testing correction separately for matrices with all interactions/only cis/only transs
+					 
+		if(cistrans=='all'){
+			binned_df_filtered$qvalue <- if(removeDiagonal){p.adjust(binned_df_filtered$pvalue, method = "BH", n=upperhalfBinNumber)}else{p.adjust(binned_df_filtered$pvalue, method = "BH", n=upperhalfBinNumber+length(all_bins))}
+		}
+		if(cistrans=='cis'){
+			binned_df_filtered$qvalue <- if(removeDiagonal){p.adjust(binned_df_filtered$pvalue, method = "BH", n=cisBinNumber)}else{p.adjust(binned_df_filtered$pvalue, method = "BH", n=cisBinNumber+length(all_bins))}	
+		}
+		if(cistrans=='trans'){
+			binned_df_filtered$qvalue <- p.adjust(binned_df_filtered$pvalue, method = "BH", n=transBinNumber)	
+		}
+					 
+		test <- data.frame(binned_df_filtered)
+		test[,"pvalue"] <- test$pvalue
+			pval.plot <- ggplot(test,aes(x=pvalue))
+			tryCatch(
+			{
+			dev.new()
+			print(pval.plot + geom_density())
+			},
+			error=function(cond) {
+			message("No interactive plot, try saving image")
+			message(cond)
+			return(tryCatch(
+				{
+				pdf(file=paste(sampleName,"pvalue_distribution.pdf",sep="_"))
+				print(pval.plot + geom_density())
+				dev.off()
+				},
+				error=function(cond2) {
+				message("No pdf output, quality assesment plot is not produced")
+				message(cond2)
+				return(NA)
+				},
+				warning=function(cond2) {
+				message("No pdf output, quality assesment plot is not produced")
+				message(cond2)
+				return(NA)
+						}
+					))
+				},
+				warning=function(cond) {
+				message("No interactive plot, try saving image")
+				message(cond)
+				return(tryCatch(
+				{
+				pdf(file=paste(sampleName,"pvalue_distribution.pdf",sep="_"))
+				print(pval.plot + geom_density())
+				dev.off()
+				},
+				error=function(cond2) {
+				message("No pdf output, quality assesment plot is not produced")
+				message(cond2)
+				return(NA)
+				},
+				warning=function(cond2) {
+				message("No pdf output, quality assesment plot is not produced")
+				message(cond2)
+				return(NA)
+				}
+			))
+		})
+					 
+	binned_df_filtered=binned_df_filtered[,c('chr1','locus1','chr2','locus2','coverage_source','coverage_target','probabilityOfInteraction', 'predicted','frequencies', 'pvalue','qvalue','logFoldChange')]
+	colnames(binned_df_filtered)=c('chr1','locus1','chr2','locus2','relCoverage1','relCoverage2','probability', 'expected','readCount', 'pvalue','qvalue','logObservedOverExpected')
+					 
+					 
+return(binned_df_filtered)
+}
+					 
+					 
 # Author: borbalagerle
 ###############################################################################
 
@@ -471,7 +810,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
     
 #filter for reads that are closer than 10kb to get rid of incomplete digest products
 #	df_int <- data.frame(as.vector(seqnames(interactingLoci[[1]])), start(ranges(interactingLoci[[1]])), as.vector(seqnames(interactingLoci[[2]])), start(ranges(interactingLoci[[2]])))
-	df_int <- data.frame(as.character(seqnames(interactingLoci[[1]])), start(ranges(interactingLoci[[1]])), as.character(seqnames(interactingLoci[[2]])), start(ranges(interactingLoci[[2]])))
+	df_int <- data.frame(as.character(seqnames(interactingLoci[[1]])), start(ranges(interactingLoci[[1]])), as.character(seqnames(interactingLoci[[2]])), start(ranges(interactingLoci[[2]])), stringsAsFactors=FALSE)
 	colnames(df_int) <- c("chr1", "locus1", "chr2", "locus2")
 	df_filtered <- df_int
 	df_filtered$dist <-as.vector(ifelse(df_filtered$chr1 == df_filtered$chr2, abs(df_filtered$locus1 - df_filtered$locus2), Inf))
@@ -502,19 +841,37 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 	all_bins <- unique(c(unique(binned_df_filtered$int1), unique(binned_df_filtered$int2)))
 	all_bins <- sort(all_bins)
 	
-	binned_dt=data.table(binned_df_filtered)
-	covA <- binned_dt[,sum(c(frequencies)),by=int1]	
-	covB <- binned_dt[,sum(c(frequencies)),by=int2]
+		if(nrow(binned_df_filtered)>1e8)
+		{
+		t <- ceiling(nrow(binned_df_filtered)/1e8)
+		dfList <- list()
+		dfList[[1]] <- binned_df_filtered[1:1e8,]
+		for(i in 2:t){
+			dfList[[i]] <- binned_df_filtered[(((i-1)*1e8)+1):min((i*1e8),nrow(binned_df_filtered)),]
+	      }
+		dtList <- lapply(dfList, data.table)
+		covAs <- lapply(dtList, function(x) x[,sum(frequencies), by=int1])
+		covBs <- lapply(dtList, function(x) x[,sum(frequencies), by=int2])
+		covAm <- do.call(rbind, covAs)
+		covBm <- do.call(rbind, covBs)
+		covA <- covAm[,sum(V1),by=int1]
+		covB <- covBm[,sum(V1),by=int2]	
+	}else{
+		binned_dt=data.table(binned_df_filtered)
+		covA <- binned_dt[,sum(frequencies),by=int1]	
+		covB <- binned_dt[,sum(frequencies),by=int2]
+	}
 	covA <- setkey(covA,key='int1')
-	setnames(covB,'int2','int1')
+	setnames(covB, 1,'int1')
 	covB <- setkey(covB,key='int1')
+					 
 	cov=merge(covA,covB,all.x=TRUE,all.y=TRUE,by='int1')
 	cov$V1.x[is.na(cov$V1.x)]=0
 	cov$V1.y[is.na(cov$V1.y)]=0
 	cov$coverage=cov$V1.x+cov$V1.y
 	coverage=cov$coverage
 	names(coverage)=cov$int1
-	
+					 
 	sumcov <- sum(coverage)
 	relative_coverage <- coverage/sumcov
 	names(relative_coverage)=names(coverage)
@@ -551,22 +908,70 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 #calculate cumulative binomial test for observed number of reads given the probability of seeing a random read
 	if(parallel)
 	{
-		binomParams <- as.data.frame(t(cbind(as.numeric(binned_df_filtered[["frequencies"]]), as.numeric(binned_df_filtered[["probability"]]))))
-
-		binned_df_filtered$pvalue <- unlist(mclapply(binomParams, function(x)
-			{
-					binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
-			},
+		library(parallel)
+			if(nrow(binned_df_filtered)>1e8)
+				{
+				t <- ceiling(nrow(binned_df_filtered)/1e8)
+				dfList <- list()
+				dfList[[1]] <- binned_df_filtered[1:1e8,]
+				for(i in 2:t){
+					 dfList[[i]] <- binned_df_filtered[(((i-1)*1e8)+1):min((i*1e8),nrow(binned_df_filtered)),]
+				}
+				dtList <- lapply(dfList, function(x) as.data.frame(t(cbind(as.numeric(x[["frequencies"]]), 
+																				as.numeric(x[["probability"]])))))
+				pvalues=list()
+				for(i in 1:length(dtList)){
+				pvalues[[i]] <-unlist(mclapply(dtList[[i]], function(x)
+					{
+						binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
+					}, 
+					mc.cores=cores))
+					 }
+			pvals=unlist(pvalues)
+			binned_df_filtered$pvalue <- pvals
+			}else{
+					 
+			binomParams <- as.data.frame(t(cbind(
+				as.numeric(binned_df_filtered[["frequencies"]]), 
+				as.numeric(binned_df_filtered[["probability"]]
+				))))
+					 
+					 
+				binned_df_filtered$pvalue <- unlist(mclapply(binomParams, function(x)
+				{
+				binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
+				}, 
 			mc.cores=cores))
-	} else
-	{
-	binned_df_filtered$pvalue <- apply(binned_df_filtered, 1, function(x)
+			}
+		}else{
+			if(nrow(binned_df_filtered)>1e8)
 			{
+				t <- ceiling(nrow(binned_df_filtered)/1e8)
+				dfList <- list()
+				dfList[[1]] <- binned_df_filtered[1:1e8,]
+			for(i in 2:t){
+				dfList[[i]] <- binned_df_filtered[(((i-1)*1e8)+1):min((i*1e8),nrow(binned_df_filtered)),]
+			}
+			pvalues=list()
+			for(i in 1:length(dfList)){
+					 pvalues[[i]] <-apply(dfList[[i]], 1, function(x)
+							{
+							binom.test(as.numeric(x[["frequencies"]]), numberOfReadPairs, as.numeric(x[["probability"]]), alternative = "greater")$p.value
+							}	
+						)
+			}
+			pvals=unlist(pvalues)
+			binned_df_filtered$pvalue <- pvals
+			}else{
+					 
+			binned_df_filtered$pvalue <- apply(binned_df_filtered, 1, function(x)
+				{
 				binom.test(as.numeric(x[["frequencies"]]), numberOfReadPairs, as.numeric(x[["probability"]]), alternative = "greater")$p.value
-			}	
-	)
+				}	
+				)
+		}
 	}
-	
+					 
 #observed over expected log ratio
 	binned_df_filtered$logFoldChange <- log2(binned_df_filtered$frequencies/binned_df_filtered$predicted)
 #multiple testing correction separately for matrices with all interactions/only cis/only transs
@@ -665,4 +1070,12 @@ GOTHiC <- function(fileName1, fileName2, sampleName, res, BSgenomeName='BSgenome
 	binom <- .binomialHiC(interactions, res,sampleName, BSgenomeName, genome, restrictionSite, enzyme, parallel, cores,cistrans=cistrans,filterdist=filterdist)
 	return(binom)
 }
+
+GOTHiChicup <-function(fileName, sampleName, res, restrictionFile, cistrans='all', fileType='table', parallel=FALSE, cores=NULL)
+					 {
+					interactions <- .importHicup(fileName, checkConsistency=TRUE, fileType=ifelse(grepl("\\.bam$", fileName), "bam", "table"))
+					interactions <- .binInteractions(interactions, res)
+					 binom <- .binomialHiChicup(interactions, restrictionFile, sampleName, cistrans, parallel, cores)
+					 return(binom)
+					 }
 
