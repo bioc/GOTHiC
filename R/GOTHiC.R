@@ -135,7 +135,7 @@ pairReads <- function(fileName1, fileName2, sampleName, DUPLICATETHRESHOLD=1, fi
     biocLite(BSgenomeName)
     }
 
-   library(BSgenomeName,character.only=TRUE)
+   requireNamespace(BSgenomeName,character.only=TRUE)
 
     chrEnds <- seqlengths(genome)
 #find out how many base pairs from the 5 end of the restriction site the enzyme cuts
@@ -327,7 +327,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 #find HindIII sites
 	if(parallel)
 	{
-		library(parallel)
+		requireNamespace(parallel)
 		hindIII_1 <- .findOverlaps.parallel(paired_reads_1, hindIIIRanges, mc.cores=cores, select="first")
 		hindIII_2 <- .findOverlaps.parallel(paired_reads_2, hindIIIRanges, mc.cores=cores, select="first")
 	}else
@@ -452,8 +452,6 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 #the output of hicup is a sam file, that looks like uniques_ORIGINALFILE_trunc.sam
 #this has to be converted using the hicupToTable tool
 	
-	library(GenomicRanges)
-	
 	if(compressed){
 		tbl <- read.table(gzfile(fileName))
 #in the sam file the two ends of the interactions are consecutive rows	
@@ -494,7 +492,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 
 .getHindIIIsitesFromHicup <- function(fileName, asRanges = TRUE)
 {
-	sites = read.table(fileName, stringsAsFactor=FALSE, header=TRUE, skip=1)
+	sites = read.table(fileName, stringsAsFactors=FALSE, header=TRUE, skip=1)
 	sites$chr <- sub("^", "chr", sites$Chromosome)
 	sites$chr <- sub("chrCHR", "chr", sites$chr) #sometimes there is CHR
 	sites$chr <- sub("chrchr", "chr", sites$chr) #sometimes there is CHR
@@ -505,7 +503,6 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 	
 	if(asRanges)
 	{
-		library(GenomicRanges)
 		return(GRanges(seqnames=sites$chr, ranges=IRanges(start=sites$start, end=sites$end)))
 	}
 }
@@ -541,11 +538,11 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 
 .binomialHiChicup=function(hicupinteraction, restrictionFile, sampleName, cistrans='all', parallel=FALSE, cores=8, removeDiagonal=TRUE)
 	{
-		library("data.table")
+
 			hindGR <- .getHindIIIsitesFromHicup(restrictionFile)
 		if(parallel)
 			{
-				library(parallel)
+				requireNamespace(parallel)
 				print("running garbage collector before parallel fork")
 				gc()
 			}
@@ -639,7 +636,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 					 					 
 		if(parallel)
 			{
-				library(parallel)
+				requireNamespace(parallel)
 				if(nrow(binned_df_filtered)>1e8)
 					{
 					 t <- ceiling(nrow(binned_df_filtered)/1e8)
@@ -908,7 +905,7 @@ return(binned_df_filtered)
 #calculate cumulative binomial test for observed number of reads given the probability of seeing a random read
 	if(parallel)
 	{
-		library(parallel)
+		requireNamespace(parallel)
 			if(nrow(binned_df_filtered)>1e8)
 				{
 				t <- ceiling(nrow(binned_df_filtered)/1e8)
