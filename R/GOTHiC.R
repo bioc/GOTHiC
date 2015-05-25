@@ -135,7 +135,7 @@ pairReads <- function(fileName1, fileName2, sampleName, DUPLICATETHRESHOLD=1, fi
     biocLite(BSgenomeName)
     }
 
-   load(BSgenomeName,character.only=TRUE)
+   library(BSgenomeName,character.only=TRUE)
 
     chrEnds <- seqlengths(genome)
 #find out how many base pairs from the 5 end of the restriction site the enzyme cuts
