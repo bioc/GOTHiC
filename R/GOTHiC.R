@@ -447,7 +447,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 	chrnames <- sub("chrchr", "chr", chrnames)
 }
 
-.importHicup <- function(fileName, checkConsistency=TRUE, fileType=ifelse(grepl("\\.bam$", fileName), "bam", "table"), compressed=ifelse(grepl("\\.gz$", fileName), TRUE, FALSE))
+.importHicup <- function(fileName, checkConsistency=TRUE, fileType=ifelse(grepl("\\.bam$", fileName)|grepl("\\.sam$", fileName), "bam", "table"), compressed=ifelse(grepl("\\.gz$", fileName), TRUE, FALSE))
 {
 #the output of hicup is a sam file, that looks like uniques_ORIGINALFILE_trunc.sam
 #this has to be converted using the hicupToTable tool
@@ -475,7 +475,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 			levels(even$chr2) <- .fixChromosomeNames(levels(even$chr2))
 		} else if(fileType=="bam")
 		{
-			stop('imporHicup: HiCUP output BAM file needs to be converted into a table')
+			stop('imporHicup: HiCUP output BAM/SAM file needs to be converted into a table')
 		}
 	}
 	joined <- cbind(odd, even)
@@ -1068,9 +1068,9 @@ GOTHiC <- function(fileName1, fileName2, sampleName, res, BSgenomeName='BSgenome
 	return(binom)
 }
 
-GOTHiChicup <-function(fileName, sampleName, res, restrictionFile, cistrans='all', fileType='table', parallel=FALSE, cores=NULL)
+GOTHiChicup <-function(fileName, sampleName, res, restrictionFile, cistrans='all', parallel=FALSE, cores=NULL)
 					 {
-					interactions <- .importHicup(fileName, checkConsistency=TRUE, fileType=ifelse(grepl("\\.bam$", fileName), "bam", "table"))
+					interactions <- .importHicup(fileName, checkConsistency=TRUE, fileType=ifelse(grepl("\\.bam$", fileName)|grepl("\\.sam$", fileName), "bam", "table"))
 					interactions <- .binInteractions(interactions, res)
 					 binom <- .binomialHiChicup(interactions, restrictionFile, sampleName, cistrans, parallel, cores)
 					 return(binom)
