@@ -4,11 +4,11 @@
 \description{
 \code{GOTHiChicup} performs a cumulative binomial test to detect interactions between distal genomic loci that have significantly more reads than expected by chance in Hi-C experiments. It takes mapped and filtered paired NGS reads from HiCUP as input and gives back the list of significant interactions for a given bin size in the genome. }
 \usage{
-GOTHiChicup(fileName, sampleName, res, restrictionFile, cistrans='all', fileType='table', parallel=FALSE, cores=NULL)
+GOTHiChicup(fileName, sampleName, res, restrictionFile, cistrans='all', parallel=FALSE, cores=NULL)
 }
 \arguments{
   \item{fileName}{
-	 A character string with the name of the file containing the mapped, filtered reads from HiCUP, after the default HiCUP output is converted to a table containing only the read ID, chromosome, start and end positions columns. Can be gzipped. (Table format)
+	 A character string with the name of the file containing the mapped, filtered reads from HiCUP, after the default HiCUP output is converted to a table containing only the read ID, chromosome, start and end positions columns. Can be gzipped. (Tab separated text format)
 }
   \item{sampleName}{
 	A character string that will be used to name the quality control plot. It will be saved in the current directory.
