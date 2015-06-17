@@ -239,7 +239,7 @@ ignore.strand=TRUE, mc.cores=1, mc.preschedule = TRUE)
     }
     
     common_seqlevels <- intersect(q_seqlevels, s_seqlevels)
-    results <- mclapply(common_seqlevels,
+    results <- parallel::mclapply(common_seqlevels,
     function(seqlevel)
     {
         if (isCircular(seqinfo)[seqlevel] %in% TRUE) {
@@ -327,7 +327,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 #find HindIII sites
 	if(parallel)
 	{
-		requireNamespace(parallel)
+		requireNamespace("parallel")
 		hindIII_1 <- .findOverlaps.parallel(paired_reads_1, hindIIIRanges, mc.cores=cores, select="first")
 		hindIII_2 <- .findOverlaps.parallel(paired_reads_2, hindIIIRanges, mc.cores=cores, select="first")
 	}else
@@ -542,7 +542,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 			hindGR <- .getHindIIIsitesFromHicup(restrictionFile)
 		if(parallel)
 			{
-				requireNamespace(parallel)
+				requireNamespace("parallel")
 				print("running garbage collector before parallel fork")
 				gc()
 			}
@@ -636,7 +636,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 					 					 
 		if(parallel)
 			{
-				requireNamespace(parallel)
+				requireNamespace("parallel")
 				if(nrow(binned_df_filtered)>1e8)
 					{
 					 t <- ceiling(nrow(binned_df_filtered)/1e8)
@@ -649,7 +649,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 																				as.numeric(x[["probabilityOfInteraction"]])))))
 					 pvalues=list()
 					 for(i in 1:length(dtList)){
-						pvalues[[i]] <-unlist(mclapply(dtList[[i]], function(x)
+						 pvalues[[i]] <-unlist(parallel::mclapply(dtList[[i]], function(x)
 													{
 													binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
 													}, 
@@ -665,7 +665,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 																	 ))))
 					 
 
-					 binned_df_filtered$pvalue <- unlist(mclapply(binomParams, function(x)
+					binned_df_filtered$pvalue <- unlist(parallel::mclapply(binomParams, function(x)
 																  {
 																  binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
 																  }, 
@@ -905,7 +905,7 @@ return(binned_df_filtered)
 #calculate cumulative binomial test for observed number of reads given the probability of seeing a random read
 	if(parallel)
 	{
-		requireNamespace(parallel)
+		requireNamespace("parallel")
 			if(nrow(binned_df_filtered)>1e8)
 				{
 				t <- ceiling(nrow(binned_df_filtered)/1e8)
@@ -918,7 +918,7 @@ return(binned_df_filtered)
 																				as.numeric(x[["probability"]])))))
 				pvalues=list()
 				for(i in 1:length(dtList)){
-				pvalues[[i]] <-unlist(mclapply(dtList[[i]], function(x)
+					pvalues[[i]] <-unlist(parallel::mclapply(dtList[[i]], function(x)
 					{
 						binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
 					}, 
@@ -934,7 +934,7 @@ return(binned_df_filtered)
 				))))
 					 
 					 
-				binned_df_filtered$pvalue <- unlist(mclapply(binomParams, function(x)
+				binned_df_filtered$pvalue <- unlist(parallel::mclapply(binomParams, function(x)
 				{
 				binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
 				}, 
