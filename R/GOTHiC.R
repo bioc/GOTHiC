@@ -143,7 +143,7 @@ pairReads <- function(fileName1, fileName2, sampleName, DUPLICATETHRESHOLD=1, fi
 #restriction site as regular expression
 	rSite <- sub('\\^', '', restrictionSite)
 #find locations where restriction enzyme cuts for all chromosomes
-    params <- new("BSParams",X=genome, FUN=matchPattern, exclude = "random",simplify=TRUE)
+    params <- new("BSParams",X=genome, FUN=matchPattern, simplify=TRUE)
     resSite <- bsapply(params, pattern = rSite)
     starts <- lapply(resSite, function(x){c(1,(start(x)+restRemain))})
     lengths <- lapply(resSite, function(x){length(x)+1})
