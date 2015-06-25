@@ -126,6 +126,7 @@ pairReads <- function(fileName1, fileName2, sampleName, DUPLICATETHRESHOLD=1, fi
 	return(filtered)		
 }
 
+
 .getRestrictionSitesFromBSgenome <- function(BSgenomeName, genome, restrictionSite, enzyme)
 {
 #check if the genome needed is already installed and install from BioConductor if not
