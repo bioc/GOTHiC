@@ -612,7 +612,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 			chromos <- unique(binned_df_filtered$chr1)
 			chrlens <- c()
 			for(cr in chromos){ 
-				chrlens[cr] <- max(length(unique(binned_df_filtered$locus1[binned_df_filtered$chr1==cr])),length(unique(binned_df_filtered$locus2[binned_df_filtered$chr2==cr])))
+                chrlens[cr] <- length(unique(c(unique(binned_df_filtered$locus1[binned_df_filtered$chr1==cr]),unique(binned_df_filtered$locus2[binned_df_filtered$chr2==cr]))))
 			}
 			cisBinNumber <-(sum(chrlens^2)-length(all_bins))/2	
 			transBinNumber <- upperhalfBinNumber-cisBinNumber
@@ -881,7 +881,8 @@ return(binned_df_filtered)
 	chromos <- unique(binned_df_filtered$chr1)
 	chrlens <- c()
 	for(cr in chromos){ 
-		chrlens[cr] <- max(length(unique(binned_df_filtered$locus1[binned_df_filtered$chr1==cr])),length(unique(binned_df_filtered$locus2[binned_df_filtered$chr2==cr])))
+        #		chrlens[cr] <- max(length(unique(binned_df_filtered$locus1[binned_df_filtered$chr1==cr])),length(unique(binned_df_filtered$locus2[binned_df_filtered$chr2==cr])))
+            chrlens[cr] <- length(unique(c(unique(binned_df_filtered$locus1[binned_df_filtered$chr1==cr])),unique(binned_df_filtered$locus2[binned_df_filtered$chr2==cr])))
 	}
 	cisBinNumber <-(sum(chrlens^2)-length(all_bins))/2	
 	transBinNumber <- upperhalfBinNumber-cisBinNumber
