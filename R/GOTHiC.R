@@ -23,7 +23,7 @@
 	   id1=as.character(elementMetadata(reads1_1)$id)
 	   id2=as.character(elementMetadata(reads2_1)$id)
 	   if(fileType=='BAM'){
-	   if(length(grep('SRR'|'ERR',id1[1], fixed=FALSE))==1){
+	   if(length(grep('SRR',id1[1]))==1|length(grep('ERR',id1[1]))==1){
 	   ids1=id1
 	   ids2=id2
 	   elementMetadata(reads1_1)$id = id1
