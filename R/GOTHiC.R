@@ -23,7 +23,7 @@
 	   id1=as.character(elementMetadata(reads1_1)$id)
 	   id2=as.character(elementMetadata(reads2_1)$id)
 	   if(fileType=='BAM'){
-	   if(length(grep('SRR',id1[1]))==1){
+	   if(length(grep('SRR'|'ERR',id1[1], fixed=FALSE))==1){
 	   ids1=id1
 	   ids2=id2
 	   elementMetadata(reads1_1)$id = id1
@@ -880,9 +880,8 @@ return(binned_df_filtered)
 	upperhalfBinNumber <- (length(all_bins)^2-length(all_bins))/2
 	chromos <- unique(binned_df_filtered$chr1)
 	chrlens <- c()
-	for(cr in chromos){ 
-        #		chrlens[cr] <- max(length(unique(binned_df_filtered$locus1[binned_df_filtered$chr1==cr])),length(unique(binned_df_filtered$locus2[binned_df_filtered$chr2==cr])))
-            chrlens[cr] <- length(unique(c(unique(binned_df_filtered$locus1[binned_df_filtered$chr1==cr])),unique(binned_df_filtered$locus2[binned_df_filtered$chr2==cr])))
+	for(cr in chromos){
+             chrlens[cr] <- length(unique(c(unique(binned_df_filtered$locus1[binned_df_filtered$chr1==cr]),unique(binned_df_filtered$locus2[binned_df_filtered$chr2==cr]))))
 	}
 	cisBinNumber <-(sum(chrlens^2)-length(all_bins))/2	
 	transBinNumber <- upperhalfBinNumber-cisBinNumber
