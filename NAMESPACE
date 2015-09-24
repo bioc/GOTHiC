@@ -4,7 +4,7 @@ importFrom("ShortRead",readAligned)
 
 importFrom("rtracklayer", export.bedGraph)
 
-importFrom(“data.table”, data.table, tables, setkey, setnames, rbindlist)
+importFrom("data.table", data.table, tables, setkey, setnames, rbindlist)
 S3method("[", data.table)
 S3method("[<-", data.table)
 S3method("$<-", data.table)
