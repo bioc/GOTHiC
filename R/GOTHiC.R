@@ -15,14 +15,25 @@
 		ids2=id2
 	}	
 	if(fileType%in%c("Bowtie", "BAM")){
+        if(fileType=="Bowtie"){
 	   reads1=readAligned(fileName1,type=fileType) ## returns identifier, strand, chromosome, position read, quality
 	   reads1_1=as(reads1,"GRanges") ## Grange object containing 4 slots, seqnames, ranges, strand, elementMetadata (data.frame)
 	   reads2=readAligned(fileName2,type=fileType)
 	   reads2_1=as(reads2,"GRanges")
 #match IDs to find paired reads where both ends were mapped
 	   id1=as.character(elementMetadata(reads1_1)$id)
-	   id2=as.character(elementMetadata(reads2_1)$id)
+       id2=as.character(elementMetadata(reads2_1)$id)
+        }
 	   if(fileType=='BAM'){
+           what=c("qname","rname","pos","qwidth", "strand")
+           param=ScanBamParam(what=what)
+           reads1=scanBam(fileName1, param=param)
+           reads2=scanBam(fileName2, param=param)
+           id1=reads1[[1]]$qname
+           id2=reads2[[1]]$qname
+           reads1_1=GRanges(seqnames=reads1[[1]]$rname, ranges=IRanges(start=reads1[[1]]$pos, end=reads1[[1]]$pos+reads1[[1]]$qwidth), strand=reads1[[1]]$strand)
+           reads2_1=GRanges(seqnames=reads2[[1]]$rname, ranges=IRanges(start=reads2[[1]]$pos, end=reads2[[1]]$pos+reads2[[1]]$qwidth), strand=reads2[[1]]$strand)
+           
 	   if(length(grep('SRR',id1[1]))==1|length(grep('ERR',id1[1]))==1){
 	   ids1=id1
 	   ids2=id2
