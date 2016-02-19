@@ -6,7 +6,7 @@ importFrom("rtracklayer", export.bedGraph)
 
 importFrom("data.table", data.table, tables, setkey, setnames, rbindlist)
 
-importFrom("GenomicAlignments", scanBam)
+importFrom("Rsamtools", scanBam)
 
 import("BiocGenerics")
 import("S4Vectors")
