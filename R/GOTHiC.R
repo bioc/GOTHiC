@@ -270,10 +270,10 @@ ignore.strand=TRUE, mc.cores=1, mc.preschedule = TRUE)
         compatible_strand <- q_strand[q_idx][q_hits] *
                              s_strand[s_idx][s_hits] != -1L
         hits <- hits[compatible_strand]
-        remapHits(hits, query.map=as.integer(q_idx),
-        new.queryLength=q_len,
-        subject.map=as.integer(s_idx),
-        new.subjectLength=s_len)
+        remapHits(hits, Lnodes.remapping=as.integer(q_idx),
+                        new.nLnode=q_len,
+                        Rnodes.remapping=as.integer(s_idx),
+                        new.nRnode=s_len)
     }, mc.cores=mc.cores, mc.preschedule=mc.preschedule)
     
     ## Combine the results.
