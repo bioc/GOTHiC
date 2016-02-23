@@ -12,8 +12,8 @@ Author: Borbala Mifsud and Robert Sugar
 Maintainer: Borbala Mifsud <Borbala.Mifsud@cancer.org.uk>
 Depends: R (>= 2.15.1), methods, utils, GenomicRanges, Biostrings,
         BSgenome, data.table
-Imports: BiocGenerics, S4Vectors (>= 0.9.38), IRanges, ShortRead, rtracklayer,
-        ggplot2
+Imports: BiocGenerics, S4Vectors (>= 0.9.38), IRanges, Rsamtools, ShortRead,
+        rtracklayer, ggplot2
 Suggests: HiCDataLymphoblast
 Enhances: parallel
 License: GPL-3
