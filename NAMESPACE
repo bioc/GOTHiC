@@ -8,6 +8,8 @@ importFrom("data.table", data.table, tables, setkey, setnames, rbindlist)
 
 importFrom("Rsamtools", scanBam)
 
+import("ggplot2”, ggplot, aes, geom_density)
+
 import("BiocGenerics")
 import("S4Vectors")
 import("IRanges")
@@ -15,7 +17,6 @@ import("IRanges")
 import("GenomicRanges")
 import("Biostrings")
 import("BSgenome")
-import("ggplot2")
 
 export("pairReads")
 export("mapReadsToRestrictionSites")
