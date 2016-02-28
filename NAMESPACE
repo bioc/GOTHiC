@@ -8,7 +8,7 @@ importFrom("data.table", data.table, tables, setkey, setnames, rbindlist)
 
 importFrom("Rsamtools", scanBam)
 
-import("ggplot2”, ggplot, aes, geom_density)
+importFrom(“ggplot2”, ggplot, aes, geom_density)
 
 import("BiocGenerics")
 import("S4Vectors")
