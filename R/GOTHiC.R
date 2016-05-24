@@ -663,7 +663,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 					 for(i in 1:length(dtList)){
 						 pvalues[[i]] <-unlist(parallel::mclapply(dtList[[i]], function(x)
 													{
-													binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
+													binom.test(x[1]-1, numberOfReadPairs, x[2], alternative = "greater")$p.value
 													}, 
 													mc.cores=cores))
 					 }
@@ -679,7 +679,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 
 					binned_df_filtered$pvalue <- unlist(parallel::mclapply(binomParams, function(x)
 																  {
-																  binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
+																  binom.test(x[1]-1, numberOfReadPairs, x[2], alternative = "greater")$p.value
 																  }, 
 																  mc.cores=cores))
 				}
@@ -696,7 +696,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 			for(i in 1:length(dfList)){
 				pvalues[[i]] <-apply(dfList[[i]], 1, function(x)
 										  {
-										  binom.test(as.numeric(x[["frequencies"]]), numberOfReadPairs, as.numeric(x[["probabilityOfInteraction"]]), alternative = "greater")$p.value
+										  binom.test(as.numeric(x[["frequencies"]])-1, numberOfReadPairs, as.numeric(x[["probabilityOfInteraction"]]), alternative = "greater")$p.value
 										  }	
 										  )
 					 }
@@ -706,7 +706,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 					 
 					 binned_df_filtered$pvalue <- apply(binned_df_filtered, 1, function(x)
 														{
-														binom.test(as.numeric(x[["frequencies"]]), numberOfReadPairs, as.numeric(x[["probabilityOfInteraction"]]), alternative = "greater")$p.value
+														binom.test(as.numeric(x[["frequencies"]])-1, numberOfReadPairs, as.numeric(x[["probabilityOfInteraction"]]), alternative = "greater")$p.value
 														}	
 														)
 			}
@@ -932,7 +932,7 @@ return(binned_df_filtered)
 				for(i in 1:length(dtList)){
 					pvalues[[i]] <-unlist(parallel::mclapply(dtList[[i]], function(x)
 					{
-						binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
+						binom.test(x[1]-1, numberOfReadPairs, x[2], alternative = "greater")$p.value
 					}, 
 					mc.cores=cores))
 					 }
@@ -948,7 +948,7 @@ return(binned_df_filtered)
 					 
 				binned_df_filtered$pvalue <- unlist(parallel::mclapply(binomParams, function(x)
 				{
-				binom.test(x[1], numberOfReadPairs, x[2], alternative = "greater")$p.value
+				binom.test(x[1]-1, numberOfReadPairs, x[2], alternative = "greater")$p.value
 				}, 
 			mc.cores=cores))
 			}
@@ -965,7 +965,7 @@ return(binned_df_filtered)
 			for(i in 1:length(dfList)){
 					 pvalues[[i]] <-apply(dfList[[i]], 1, function(x)
 							{
-							binom.test(as.numeric(x[["frequencies"]]), numberOfReadPairs, as.numeric(x[["probability"]]), alternative = "greater")$p.value
+							binom.test(as.numeric(x[["frequencies"]])-1, numberOfReadPairs, as.numeric(x[["probability"]]), alternative = "greater")$p.value
 							}	
 						)
 			}
@@ -975,7 +975,7 @@ return(binned_df_filtered)
 					 
 			binned_df_filtered$pvalue <- apply(binned_df_filtered, 1, function(x)
 				{
-				binom.test(as.numeric(x[["frequencies"]]), numberOfReadPairs, as.numeric(x[["probability"]]), alternative = "greater")$p.value
+				binom.test(as.numeric(x[["frequencies"]])-1, numberOfReadPairs, as.numeric(x[["probability"]]), alternative = "greater")$p.value
 				}	
 				)
 		}
