@@ -731,7 +731,7 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 			pval.plot <- ggplot(test,aes(x=pvalue))
 			tryCatch(
 			{
-			dev.new()
+			x11()
 			print(pval.plot + geom_density())
 			},
 			error=function(cond) {
@@ -1000,7 +1000,7 @@ return(binned_df_filtered)
     pval.plot <- ggplot(test,aes(x=pvalue))
 	tryCatch(
 			 {
-			 dev.new()
+			 x11()
 			 print(pval.plot + geom_density())
 			 },
 			 error=function(cond) {
