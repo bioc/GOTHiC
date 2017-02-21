@@ -454,8 +454,8 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 .fixChromosomeNames <- function(chrnames)
 {
 #capital to small
+    chrnames <- paste0("chr", chrnames)
 	chrnames <- sub("CHR", "chr", chrnames)
-	chrnames <- sub("", "chr", chrnames)
 	chrnames <- sub("chrchr", "chr", chrnames)
 }
 
@@ -1081,10 +1081,11 @@ GOTHiC <- function(fileName1, fileName2, sampleName, res, BSgenomeName='BSgenome
 }
 
 GOTHiChicup <-function(fileName, sampleName, res, restrictionFile, cistrans='all', parallel=FALSE, cores=NULL)
-					 {
-					interactions <- .importHicup(fileName, checkConsistency=TRUE, fileType=ifelse(grepl("\\.bam$", fileName)|grepl("\\.sam$", fileName), "bam", "table"))
-					interactions <- .binInteractions(interactions, res)
-					 binom <- .binomialHiChicup(interactions, restrictionFile, sampleName, cistrans, parallel, cores)
-					 return(binom)
-					 }
+{
+    interactions <- .importHicup(fileName, checkConsistency=TRUE, fileType=ifelse(grepl("\\.bam$", fileName)|grepl("\\.sam$", fileName), "bam", "table"))
+    interactions <- .mapHicupToRestrictionFragment(interactions, restrictionFile)
+    interactions <- .binInteractions(interactions, res)
+    binom <- .binomialHiChicup(interactions, restrictionFile, sampleName, cistrans, parallel, cores)
+    return(binom)
+}
 
