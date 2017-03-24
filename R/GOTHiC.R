@@ -543,8 +543,11 @@ mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,
 	sources <- pmin(firstFragment, secondFragment)
 	targets <- pmax(firstFragment, secondFragment)
 	
-	interactions <- as.data.frame(cbind(seqnames(fragments[sources]), start(ranges(fragments[sources])), seqnames(fragments[targets]), start(ranges(fragments[targets])), rep(1, times=length(sources))), stringsAsFactors=FALSE)
-	colnames(interactions) <- c('chr1', 'locus1', 'chr2', 'locus2', 'frequencies')				 
+	interactions <- as.data.frame(cbind(as.character(seqnames(fragments[sources])), start(ranges(fragments[sources])), as.character(seqnames(fragments[targets])), start(ranges(fragments[targets])), rep(1, times=length(sources))), stringsAsFactors=FALSE)
+	colnames(interactions) <- c('chr1', 'locus1', 'chr2', 'locus2', 'frequencies')
+    interactions$locus1=as.numeric(interactions$locus1)
+    interactions$locus2=as.numeric(interactions$locus2)
+    interactions$frequencies=as.numeric(interactions$frequencies)
 	return(interactions)
 }
 
