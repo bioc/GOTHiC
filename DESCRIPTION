@@ -6,7 +6,7 @@ Description: This is a Hi-C analysis package using a cumulative
         in Hi-C experiments. It takes mapped paired NGS reads as input
         and gives back the list of significant interactions for a given
         bin size in the genome.
-Version: 1.17.0
+Version: 1.17.1
 Date: 2013-06-07
 Author: Borbala Mifsud and Robert Sugar
 Maintainer: Borbala Mifsud <b.mifsud@qmul.ac.uk>

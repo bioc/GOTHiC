@@ -143,8 +143,9 @@ pairReads <- function(fileName1, fileName2, sampleName, DUPLICATETHRESHOLD=1, fi
 #check if the genome needed is already installed and install from BioConductor if not
       iG=installed.genomes()
     if(!BSgenomeName%in%iG){
-    source("http://bioconductor.org/biocLite.R")
-    biocLite(BSgenomeName)
+    if (!requireNamespace("BiocManager", quietly=TRUE))
+        install.packages("BiocManager")
+    BiocManager::install(BSgenomeName)
     }
 
    library(BSgenomeName,character.only=TRUE)
