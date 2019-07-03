@@ -314,7 +314,7 @@ ignore.strand=TRUE, mc.cores=1, mc.preschedule = TRUE)
 .exportCoverage <- function(reads, sampleName)
 {
 	coverage_reads = coverage(reads)
-	export.bedGraph(as(coverage_reads,"RangedData"), paste("coverage_", sampleName, ".bed", sep =""))
+	export.bedGraph(as(coverage_reads,"GRanges"), paste("coverage_", sampleName, ".bed", sep =""))
 }
 
 mapReadsToRestrictionSites <- function(pairedReadsFile, sampleName,BSgenomeName,genome,restrictionSite,enzyme,parallel=F, cores=1)
