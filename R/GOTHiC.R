@@ -293,11 +293,11 @@ ignore.strand=TRUE, mc.cores=1, mc.preschedule = TRUE)
     }
     if (select == "first") {
         ans <- rep.int(NA_integer_, q_len)
-        oo <- S4Vectors:::orderIntegerPairs(q_hits, s_hits, decreasing=TRUE)
+        oo <- S4Vectors::orderIntegerPairs(q_hits, s_hits, decreasing=TRUE)
         ans[q_hits[oo]] <- s_hits[oo]
         return(ans)
     }
-    oo <- S4Vectors:::orderIntegerPairs(q_hits, s_hits)
+    oo <- S4Vectors::orderIntegerPairs(q_hits, s_hits)
     q_hits <- q_hits[oo]
     s_hits <- s_hits[oo]
     if (select == "last") {
