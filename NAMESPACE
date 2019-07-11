@@ -10,8 +10,6 @@ importFrom("Rsamtools", scanBam)
 
 importFrom("ggplot2", ggplot, aes, geom_density)
 
-importFrom("BiocManager", install)
-
 importFrom("parallel", mclapply)
 
 import("BiocGenerics")

@@ -6,7 +6,7 @@ Description: This is a Hi-C analysis package using a cumulative
         in Hi-C experiments. It takes mapped paired NGS reads as input
         and gives back the list of significant interactions for a given
         bin size in the genome.
-Version: 1.21.3
+Version: 1.21.4
 Date: 2013-06-07
 Author: Borbala Mifsud and Robert Sugar
 Maintainer: Borbala Mifsud <b.mifsud@qmul.ac.uk>
@@ -14,7 +14,7 @@ Depends: R (>= 2.15.1), methods, utils, GenomicRanges, Biostrings,
         BSgenome, data.table
 Imports: BiocGenerics, S4Vectors (>= 0.9.38), IRanges, Rsamtools, ShortRead,
         rtracklayer, ggplot2
-Suggests: HiCDataLymphoblast, parallel, BiocManager
+Suggests: HiCDataLymphoblast, parallel
 License: GPL-3
 biocViews: ImmunoOncology, Sequencing, Preprocessing, Epigenetics, HiC
 PackageStatus: Deprecated
