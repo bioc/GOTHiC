@@ -12,6 +12,14 @@ importFrom("ggplot2", ggplot, aes, geom_density)
 
 importFrom("parallel", mclapply)
 
+importFrom("grDevices", "dev.off", "pdf", "x11")
+
+importFrom("stats", "binom.test", "p.adjust")
+ 
+importFrom("utils", "install.packages", "read.table")
+
+importFrom("BiocManager", "install") 
+
 import("BiocGenerics")
 import("S4Vectors")
 import("IRanges")
