@@ -1,21 +1,16 @@
 import("methods")
 
 importFrom("ShortRead",readAligned)
-
 importFrom("rtracklayer", export.bedGraph)
-
 importFrom("data.table", data.table, tables, setkey, setnames, rbindlist)
-
 importFrom("Rsamtools", scanBam)
-
 importFrom("ggplot2", ggplot, aes, geom_density)
-
 importFrom("parallel", mclapply)
+importFrom("BiocManager", install)
 
 import("BiocGenerics")
 import("S4Vectors")
 import("IRanges")
-
 import("GenomicRanges")
 import("Biostrings")
 import("BSgenome")
