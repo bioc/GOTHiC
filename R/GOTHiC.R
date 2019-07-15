@@ -1,6 +1,9 @@
 
 #Copyright: Bori Gerle (gerle@ebi.ac.uk), EMBL-EBI, 2011
 
+#set global variables
+globalVariables(c("BSgenome.Hsapiens.UCSC.hg19", "V1", "chr1", "chr2", "filtered", "frequencies", "int1", "int2", "interactingLoci", "locus1", "locus2", "pvalue", "resGR")) 
+
 .onlyPairing <- function(fileName1, fileName2, sampleName, fileType)
 {
 #DUPLICATETHRESHOLD: maximum amount of duplicated paired-end reads allowed (over that value it is expected to be PCR bias)
@@ -192,7 +195,7 @@ pairReads <- function(fileName1, fileName2, sampleName, DUPLICATETHRESHOLD=1, fi
         stop("overlap type \"", type, "\" is not yet supported ",
              "for circular sequence ", names(circle.length))
     subject0 <- .putRangesOnFirstCircle(subject, circle.length)
-    inttree0 <- IntervalTree(subject0)
+    inttree0 <- NCList(subject0)
     query0 <- .putRangesOnFirstCircle(query, circle.length)
     hits00 <- findOverlaps(query0, inttree0,
                            maxgap=maxgap, minoverlap=minoverlap,

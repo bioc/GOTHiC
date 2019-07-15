@@ -1,29 +1,19 @@
-import("methods")
-
 importFrom("ShortRead",readAligned)
-
 importFrom("rtracklayer", export.bedGraph)
-
 importFrom("data.table", data.table, tables, setkey, setnames, rbindlist)
-
-importFrom("Rsamtools", scanBam)
-
+importFrom("Rsamtools", scanBam, ScanBamParam)
 importFrom("ggplot2", ggplot, aes, geom_density)
-
 importFrom("parallel", mclapply)
-
 importFrom("grDevices", "dev.off", "pdf", "x11")
-
 importFrom("stats", "binom.test", "p.adjust")
- 
-importFrom("utils", "install.packages", "read.table")
-
+importFrom("utils", "install.packages", "read.table", "globalVariables")
 importFrom("BiocManager", "install") 
+importFrom("GenomeInfoDb", "seqlengths", "isCircular")
 
+import("methods")
 import("BiocGenerics")
 import("S4Vectors")
 import("IRanges")
-
 import("GenomicRanges")
 import("Biostrings")
 import("BSgenome")
