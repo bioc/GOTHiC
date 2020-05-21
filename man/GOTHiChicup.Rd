@@ -8,7 +8,7 @@ GOTHiChicup(fileName, sampleName, res, restrictionFile, cistrans='all', parallel
 }
 \arguments{
   \item{fileName}{
-	 A character string with the name of the file containing the mapped, filtered reads from HiCUP, after the default HiCUP output is converted to a table containing only the read ID, chromosome, start and end positions columns. Can be gzipped. (Tab separated text format)
+	 A character string with the name of the file containing the mapped, filtered reads from HiCUP, after the default HiCUP output is converted to a table containing only the first 4 columns (read ID, flag, chromosome and start positions). Can be gzipped. (Tab separated text format)
 }
   \item{sampleName}{
 	A character string that will be used to name the quality control plot. It will be saved in the current directory.
