@@ -1,0 +1,21 @@
+citEntry(entry="article",
+         title = "GOTHiC, a probabilistic model to resolve complex biases and to identify real interactions in Hi-C data",
+         author = personList( as.person("Borbala Mifsud"), 
+                              as.person("Inigo Marticorena"),
+			      as.person("Elodie Darbo"),
+			      as.person("Robert Sugar"),
+        		      as.person("Stefan Schoenfelder"),
+                              as.person("Peter Fraser"),
+                              as.person("Nicholas Luscombe")),
+         year = 2017,
+         journal = "PLoS ONE",
+         volume = "12",
+         pages = "e0174744",
+         doi = "10.1371/journal.pone.0174744",
+         url = "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0174744",
+         
+         textVersion = 
+         paste("Borbala Mifsud, Inigo Martincorena, Elodie Darbo, Robert Sugar, Stefan Schoenfelder, Peter Fraser, Nicholas Luscombe (2017):", 
+               "GOTHiC, a probabilistic model to resolve complex biases and to identify real interactions in Hi-C data.",
+                "PLoS ONE 12:e0174744" ) )
+
