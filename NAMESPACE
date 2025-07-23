@@ -8,7 +8,7 @@ importFrom("grDevices", "dev.off", "pdf", "x11")
 importFrom("stats", "binom.test", "p.adjust")
 importFrom("utils", "install.packages", "read.table", "globalVariables")
 importFrom("BiocManager", "install") 
-importFrom("GenomeInfoDb", "seqlengths", "isCircular")
+importFrom("Seqinfo", "seqnames", "seqlengths", "isCircular")
 
 import("methods")
 import("BiocGenerics")
